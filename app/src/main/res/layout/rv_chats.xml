@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_sent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            android:id="@+id/layout_msg_sent"
+            layout="@layout/item_message_sent" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_received"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+
+        <include
+            android:id="@+id/layout_msg_received"
+            layout="@layout/item_message_received" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,21 @@
+<resources>
+
+    <!-- Declare custom theme attributes that allow changing which styles are
+         used for button bars depending on the API level.
+         ?android:attr/buttonBarStyle is new as of API 11 so this is
+         necessary to support previous API levels. -->
+    <declare-styleable name="ButtonBarContainerTheme">
+        <attr name="metaButtonBarStyle" format="reference" />
+        <attr name="metaButtonBarButtonStyle" format="reference" />
+    </declare-styleable>
+    <declare-styleable name="Emoji">
+        <attr name="emojiSize" format="dimension"/>
+        <attr name="emojiAlignment" format="enum">
+            <enum name="bottom" value="0"/>
+            <enum name="baseline" value="1"/>
+        </attr>
+        <attr name="emojiTextStart" format="integer"/>
+        <attr name="emojiTextLength" format="integer"/>
+        <attr name="emojiUseSystemDefault" format="boolean"/>
+    </declare-styleable>
+</resources>

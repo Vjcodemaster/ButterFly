@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">ButterFly</string>
+    <string name="put_your_number">Put your number here babe</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="login">Login</string>
+    <string name="made_with_love">Crafted with \u2764</string>
+
+    <string name="b">Bhavya</string>
+
+    <string-array name="like_him">
+        <item>So you like him ah? :D</item>
+        <item>Oh stop it! You seriously like him? :)</item>
+        <item>That\'s it. You started loving him wow! ;)</item>
+        <item>Looks like you want to kiss him!! :D</item>
+        <item>You have gone insane! You want to hug him?</item>
+        <item>Alright you should stop at this moment! Things might go wild :P</item>
+    </string-array>
+</resources>

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "890088104088",
+    "firebase_url": "https://butterfly-vj4.firebaseio.com",
+    "project_id": "butterfly-vj4",
+    "storage_bucket": "butterfly-vj4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:890088104088:android:327cbc7852a074ac",
+        "android_client_info": {
+          "package_name": "com.vj.butterfly"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "890088104088-7fnlfiit0ibh3o6e05fej4i0il7b59f6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vj.butterfly",
+            "certificate_hash": "2e7c9faa0f320ab09f11e5129a190f6436001a48"
+          }
+        },
+        {
+          "client_id": "890088104088-i2qbf8kdhs49v4rq92urhvigpf6u3q18.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAd3X-90PBGsZDCv2KRjdhNY0Zdz8HITag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "890088104088-i2qbf8kdhs49v4rq92urhvigpf6u3q18.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
