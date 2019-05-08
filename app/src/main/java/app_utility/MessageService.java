@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.ChildEventListener;
@@ -19,7 +18,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.vj.butterfly.ChatFragment;
-import com.vj.butterfly.HomeScreenActivity;
 import com.vj.butterfly.R;
 
 import java.util.ArrayList;
@@ -184,9 +182,11 @@ public class MessageService extends Service implements OnChatInterfaceListener {
             int id = alPendingList.get(i).get_id();
             DataBaseHelper e = new DataBaseHelper(StaticReferenceClass.SENT);
             dbh.updateStatusOfMessages(e, id);
+            if (ChatFragment.mListener != null)
+                ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.get(i).get_id(), e);
         }
-        if (alPendingList.size() > 0 && ChatFragment.mListener != null)
-            ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.size(), null);
+        /*if (alPendingList.size() > 0 && ChatFragment.mListener != null)
+            ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.size(), null);*/
         dbReference.child("chats").child("9036640528").child("delivered").setValue(false);
         dbReference.child("chats").child("9036640528").child("read").setValue(false);
     }
@@ -290,9 +290,11 @@ public class MessageService extends Service implements OnChatInterfaceListener {
                                 int id = alPendingList.get(i).get_id();
                                 DataBaseHelper e = new DataBaseHelper(StaticReferenceClass.DELIVERED);
                                 dbh.updateStatusOfMessages(e, id);
+                                if (ChatFragment.mListener != null)
+                                    ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.get(i).get_id(), e);
                             }
-                            if (ChatFragment.mListener != null)
-                                ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.size(), null);
+                            /*if (ChatFragment.mListener != null)
+                                ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.size(), null);*/
                             dbReference.child("chats").child("9036640528").child("delivered").setValue(false);
                             dbReference.child("chats").child("9036640528").child("text").setValue("");
                         }
@@ -304,33 +306,46 @@ public class MessageService extends Service implements OnChatInterfaceListener {
                                 int id = alPendingList.get(i).get_id();
                                 DataBaseHelper e = new DataBaseHelper(StaticReferenceClass.READ);
                                 dbh.updateStatusOfMessages(e, id);
+                                if (ChatFragment.mListener != null)
+                                    ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.get(i).get_id(), e);
                             }
-                            if (ChatFragment.mListener != null)
-                                ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.size(), null);
+                            /*if (ChatFragment.mListener != null)
+                                ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.size(), null);*/
                             dbReference.child("chats").child("9036640528").child("read").setValue(false);
                         }
                         break;
                     case "typing":
                         if ((boolean) dataSnapshot.getValue()) {
 
+                        } else {
+
                         }
                         break;
                     case "text":
                         String s1 = dataSnapshot.getValue().toString();
+                        String[] saMessages;
                         if(!s1.equals("")) {
-                            String sTimeStamp = String.valueOf(TimestampUtil.getCurrentTimestamp());
-                            int type = StaticReferenceClass.INCOME;
-                            int status = -1;
+                            if (s1.contains("#")) {
+                                saMessages = s1.split("##");
+                                for (String saMessage : saMessages) {
+                                    getTheMessages(saMessage);
+                                }
+                            } else {
+                                getTheMessages(s1);
+                                /*String sTimeStamp = String.valueOf(TimestampUtil.getCurrentTimestamp());
+                                int type = StaticReferenceClass.INCOME;
+                                int status = -1;
 
-                            String sFinalTime = sTimeStamp.split("\\s")[1].substring(0, 5);
+                                String sFinalTime = sTimeStamp.split("\\s")[1].substring(0, 5);
 
-                            DataBaseHelper e = new DataBaseHelper(type, s1, sFinalTime, status);
-                            if (ChatFragment.mListener != null) {
-                                ChatFragment.mListener.onChat("UPDATE_MSG", "", 0, e);
+                                DataBaseHelper e = new DataBaseHelper(type, s1, sFinalTime, status);
+                                if (ChatFragment.mListener != null) {
+                                    ChatFragment.mListener.onChat("UPDATE_MSG", "", 0, e);
+                                }
+                                dbh.addDataToMessageTable(e);
+                                dbReference.child("chats").child("9036640528").child("text").setValue("");
+                                dbReference.child("chats").child("9036640528").child("delivered").setValue(true);*/
                             }
-                            dbh.addDataToMessageTable(e);
-                            dbReference.child("chats").child("9036640528").child("text").setValue("");
-                            dbReference.child("chats").child("9036640528").child("delivered").setValue(true);
                         }
                         break;
                 }
@@ -351,5 +366,21 @@ public class MessageService extends Service implements OnChatInterfaceListener {
 
             }
         });
+    }
+
+    private void getTheMessages(String s1){
+        String sTimeStamp = String.valueOf(TimestampUtil.getCurrentTimestampStringFormat());
+        int type = StaticReferenceClass.INCOME;
+        int status = -1;
+
+        //String sFinalTime = sTimeStamp.split("\\s")[1].substring(0, 5);
+
+        DataBaseHelper e = new DataBaseHelper(type, s1, sTimeStamp, status);
+        if (ChatFragment.mListener != null) {
+            ChatFragment.mListener.onChat("UPDATE_MSG", "", 0, e);
+        }
+        dbh.addDataToMessageTable(e);
+        dbReference.child("chats").child("9036640528").child("text").setValue("");
+        dbReference.child("chats").child("9036640528").child("delivered").setValue(true);
     }
 }

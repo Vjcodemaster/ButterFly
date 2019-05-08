@@ -75,7 +75,95 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public int lastID() {
+    /*public String lastDate(){
+        String date;
+        Cursor cursor;
+        SQLiteDatabase db = getReadableDatabase();
+        cursor = db.query(TABLE_MESSAGES, new String[]{KEY_TIME,
+                }, KEY_ID + "=?",
+                new String[]{String.valueOf(lastID())}, null, null, null, null);
+        //cursor = db.rawQuery("SELECT TABLEALL FROM last_seen WHERE _id" +" = "+ID +" ", new String[] {KEY_ID + ""});
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            date = cursor.getString(cursor.getColumnIndex(KEY_TIME));
+        } else {
+            date = "";
+        }
+        *//*if(sName==null){
+            return "";
+        }*//*
+        cursor.close();
+        return date;
+    }*/
+
+    /*
+    gets data of last record added to database
+     */
+    public String lastDate(){
+        String date;
+        Cursor cursor;
+        SQLiteDatabase db = getReadableDatabase();
+        cursor = db.query(TABLE_MESSAGES, new String[]{KEY_TIME,
+        }, null, null, null, null, KEY_ID +" DESC", "1");
+
+        //cursor = db.rawQuery("SELECT TABLEALL FROM last_seen WHERE _id" +" = "+ID +" ", new String[] {KEY_ID + ""});
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            date = cursor.getString(cursor.getColumnIndex(KEY_TIME));
+        } else {
+            date = "";
+        }
+        /*if(sName==null){
+            return "";
+        }*/
+        cursor.close();
+        return date;
+    }
+
+    public List<String> lastMessageAndTime(){
+        ArrayList<String> alData = new ArrayList<>();
+        Cursor cursor;
+        SQLiteDatabase db = getReadableDatabase();
+        cursor = db.query(TABLE_MESSAGES, new String[]{KEY_MESSAGE, KEY_TIME,
+        }, null, null, null, null, KEY_ID +" DESC", "1");
+
+        //cursor = db.rawQuery("SELECT TABLEALL FROM last_seen WHERE _id" +" = "+ID +" ", new String[] {KEY_ID + ""});
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            alData.add(cursor.getString(cursor.getColumnIndex(KEY_MESSAGE)));
+            alData.add(cursor.getString(cursor.getColumnIndex(KEY_TIME)));
+        }/* else {
+            message = "";
+        }*/
+        /*if(sName==null){
+            return "";
+        }*/
+        cursor.close();
+        return alData;
+    }
+
+
+    public String lastMessage(){
+        String message;
+        Cursor cursor;
+        SQLiteDatabase db = getReadableDatabase();
+        cursor = db.query(TABLE_MESSAGES, new String[]{KEY_MESSAGE,
+        }, null, null, null, null, KEY_ID +" DESC", "1");
+
+        //cursor = db.rawQuery("SELECT TABLEALL FROM last_seen WHERE _id" +" = "+ID +" ", new String[] {KEY_ID + ""});
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            message = cursor.getString(cursor.getColumnIndex(KEY_MESSAGE));
+        } else {
+            message = "";
+        }
+        /*if(sName==null){
+            return "";
+        }*/
+        cursor.close();
+        return message;
+    }
+    /*public int lastID() {
         int res;
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(TABLE_MESSAGES, new String[]{COLUMN_ID,
@@ -105,7 +193,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         cursor.close();
         return res;
-    }
+    }*/
 
     public List<DataBaseHelper> getMessages() {
         List<DataBaseHelper> dataBaseHelperList = new ArrayList<>();

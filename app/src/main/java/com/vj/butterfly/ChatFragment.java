@@ -13,7 +13,6 @@ import android.widget.ImageButton;
 import java.util.ArrayList;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import app_utility.DataBaseHelper;
@@ -32,7 +31,7 @@ import app_utility.TimestampUtil;
  * Use the {@link ChatFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ChatFragment extends Fragment implements OnChatInterfaceListener{
+public class ChatFragment extends Fragment implements OnChatInterfaceListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -81,7 +80,7 @@ public class ChatFragment extends Fragment implements OnChatInterfaceListener{
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        mListener =this;
+        mListener = this;
         dbh = new DatabaseHandler(getActivity());
     }
 
@@ -92,8 +91,6 @@ public class ChatFragment extends Fragment implements OnChatInterfaceListener{
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
         initViews(view);
-
-
 
         return view;
     }
@@ -106,18 +103,18 @@ public class ChatFragment extends Fragment implements OnChatInterfaceListener{
         etEmoji.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount());
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String sTyping = etEmoji.getText().toString();
-                if(sTyping.length()==1){
-                    if(MessageService.onChatInterfaceListener!=null)
-                    MessageService.onChatInterfaceListener.onChat("TYPING", "", 1, null);
-                } else if(sTyping.length()==0){
-                    if(MessageService.onChatInterfaceListener!=null)
-                    MessageService.onChatInterfaceListener.onChat("TYPING", "", 0, null);
+                if (sTyping.length() == 1) {
+                    if (MessageService.onChatInterfaceListener != null)
+                        MessageService.onChatInterfaceListener.onChat("TYPING", "", 1, null);
+                } else if (sTyping.length() == 0) {
+                    if (MessageService.onChatInterfaceListener != null)
+                        MessageService.onChatInterfaceListener.onChat("TYPING", "", 0, null);
                 }
             }
 
@@ -131,8 +128,9 @@ public class ChatFragment extends Fragment implements OnChatInterfaceListener{
 
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mLinearLayoutManager.setOrientation(RecyclerView.VERTICAL);
+        //mLinearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(mLinearLayoutManager);
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        //recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         recyclerView.setHasFixedSize(true);
 
         ArrayList<DataBaseHelper> alDBMessages = new ArrayList<>(dbh.getMessages());
@@ -149,15 +147,28 @@ public class ChatFragment extends Fragment implements OnChatInterfaceListener{
         ibSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 String sMsg = etEmoji.getText().toString();
-                String sTimeStamp = String.valueOf(TimestampUtil.getCurrentTimestamp());
+                etEmoji.setText("");
+                //String sTimeStamp = String.valueOf(TimestampUtil.getCurrentTimestamp());
+                String sTimeStamp = String.valueOf(TimestampUtil.getCurrentTimestampStringFormat());
                 int type = StaticReferenceClass.OUTGOING;
                 int status = StaticReferenceClass.PENDING;
 
-                String sFinalTime = sTimeStamp.split("\\s")[1].substring(0,5);
+                String sPreviousDate = dbh.lastDate().split(" ")[0];
+                String sToday = sTimeStamp.split(" ")[0];
+                if(!sToday.equals(sPreviousDate)){
+                    int msgType = StaticReferenceClass.DATE;
+                    int msgStatus = StaticReferenceClass.DONT_SEND;
+                    DataBaseHelper e = new DataBaseHelper(msgType, "", sToday, msgStatus);
+                    updateMessageList(e);
+                }
+                //Log.e("asdasd", sTimeStamp);
+                //Log.e("asdasd", TimestampUtil.getCurrentTimestampStringFormat());
 
-                etEmoji.setText("");
-                DataBaseHelper e = new DataBaseHelper(type, sMsg, sFinalTime, status);
+                //String sFinalTime = sTimeStamp.split("\\s")[1].substring(0,5);
+                //String sFinalTime = sTimeStamp.split("\\s")[1].substring(0,5);
+                DataBaseHelper e = new DataBaseHelper(type, sMsg, sTimeStamp, status);
                 updateMessageList(e);
             }
         });
@@ -191,17 +202,20 @@ public class ChatFragment extends Fragment implements OnChatInterfaceListener{
 
     @Override
     public void onChat(String sCase, String sMessage, int nFlag, DataBaseHelper e) {
-        switch (sCase){
+        switch (sCase) {
             case "UPDATE_MSG":
                 this.chatRVAdapter.getDataset().add(e);
                 this.chatRVAdapter.notifyItemInserted(recyclerView.getAdapter().getItemCount() - 1);
                 this.recyclerView.scrollToPosition(this.chatRVAdapter.getItemCount() - 1);
                 break;
             case "UPDATE_STATUS":
-                //this.chatRVAdapter.getDataset().add(e);
-                //this.chatRVAdapter.notifyItemRangeChanged(recyclerView.getAdapter().getItemCount() - nFlag, nFlag);
-                this.chatRVAdapter.notifyDataSetChanged();
-                this.recyclerView.scrollToPosition(this.chatRVAdapter.getItemCount() - 1);
+                /*this.chatRVAdapter.notifyItemRangeChanged(recyclerView.getAdapter().getItemCount() - nFlag, nFlag);
+                this.recyclerView.scrollToPosition(this.chatRVAdapter.getItemCount() - 1);*/
+                if (e != null) {
+                    this.chatRVAdapter.getDataset().get(nFlag - 1).set_status(e.get_status());
+                    this.chatRVAdapter.notifyItemChanged(nFlag - 1);
+                }
+                //this.recyclerView.scrollToPosition(this.chatRVAdapter.getItemCount() - 1);
                 break;
         }
     }

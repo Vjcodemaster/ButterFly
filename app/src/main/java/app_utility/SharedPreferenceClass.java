@@ -28,7 +28,6 @@ public class SharedPreferenceClass {
         editor.apply();
     }
 
-
     public void setUserLogStatus(boolean bValue, String sUserName, String sButterFly, String sPhone){
         /*SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
         SharedPreferences.Editor editor;

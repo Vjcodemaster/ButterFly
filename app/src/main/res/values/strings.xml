@@ -9,6 +9,9 @@
     <string name="login">Login</string>
     <string name="made_with_love">Crafted with \u2764</string>
 
+    <string name="typing">typing…</string>
+    <string name="is_thinking">is thinking about…</string>
+
     <string name="b">Bhavya</string>
 
     <string-array name="like_him">

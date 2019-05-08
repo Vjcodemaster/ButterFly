@@ -12,6 +12,8 @@
     <color name="colorBlue">#33b5e5</color>
     <color name="colorDarkGold">#FFAA07</color>
     <color name="colorNextToWhite">#f9fcff</color>
+    
+    <color name="colorLightBlueTint">#d3dbe2</color>
 
     <color name="black_overlay">#66000000</color>
 </resources>

@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Class that provides methods for dealing with timestamp objects
@@ -31,7 +32,7 @@ public class TimestampUtil {
      * @return current timestamp in the format "yyyy-MM-dd hh:mm:ss.SSS"
      */
     public static String getCurrentTimestampStringFormat() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM hh:mm", Locale.US);
         return sdf.format(TimestampUtil.getCurrentTimestamp());
     }
 
