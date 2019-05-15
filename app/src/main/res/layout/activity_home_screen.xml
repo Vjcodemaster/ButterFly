@@ -12,93 +12,111 @@
         android:id="@+id/toolbar"
         layout="@layout/toolbar_layout" />
 
-    <FrameLayout
-        android:id="@+id/fl_container"
+    <androidx.drawerlayout.widget.DrawerLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/drawer_layout"
+        android:fitsSystemWindows="true">
 
-        <LinearLayout
-            android:id="@+id/ll_chat_item"
+        <FrameLayout
+            android:id="@+id/fl_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:orientation="horizontal">
-
-            <library.CircleImageView
-                android:id="@+id/civ_dp"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:background="?attr/selectableItemBackground"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/vj" />
+            android:layout_height="match_parent">
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tv_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Vijay"
-                    android:textAppearance="@android:style/TextAppearance.Large"
-                    android:textColor="@android:color/white" />
-
-                <TextView
-                    android:id="@+id/tv_think"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="is thinking about..."
-                    android:textAppearance="@android:style/TextAppearance.Medium"
-                    android:textColor="@color/colorNextToWhite" />
-
-                <TextView
-                    android:id="@+id/tv_last_message"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
-                    android:text="last message"
-                    android:textAppearance="@android:style/TextAppearance.Small"
-                    android:textColor="@android:color/white" />
-            </LinearLayout>
-
-            <FrameLayout
+                android:id="@+id/ll_chat_item"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="2dp">
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="horizontal">
 
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/lottie_view"
-                    android:layout_width="35dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="top|end"
-                    android:layout_marginBottom="3dp"
-                    app:lottie_autoPlay="true"
-                    app:lottie_fileName="pulse_loader.json"
-                    app:lottie_loop="true" />
-                <!--<ImageButton
-                    android:id="@+id/ib_nudge"
-                    android:layout_width="wrap_content"
-                    android:layout_gravity="top|end"
+                <library.CircleImageView
+                    android:id="@+id/civ_dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
                     android:background="?attr/selectableItemBackground"
-                    android:layout_height="wrap_content" />-->
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/vj" />
 
-                <TextView
-                    android:id="@+id/tv_time"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:layout_marginBottom="3dp"
-                    android:text="10:53"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp" />
+                    android:layout_marginStart="8dp"
+                    android:orientation="vertical">
 
-            </FrameLayout>
-        </LinearLayout>
-    </FrameLayout>
+                    <TextView
+                        android:id="@+id/tv_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vijay"
+                        android:textAppearance="@android:style/TextAppearance.Large"
+                        android:textColor="@android:color/white" />
+
+                    <TextView
+                        android:id="@+id/tv_think"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="is thinking about..."
+                        android:textAppearance="@android:style/TextAppearance.Medium"
+                        android:textColor="@color/colorNextToWhite" />
+
+                    <TextView
+                        android:id="@+id/tv_last_message"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:text="last message"
+                        android:textAppearance="@android:style/TextAppearance.Small"
+                        android:textColor="@android:color/white" />
+                </LinearLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="2dp">
+
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/lottie_view"
+                        android:layout_width="35dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="top|end"
+                        android:layout_marginBottom="3dp"
+                        app:lottie_autoPlay="true"
+                        app:lottie_fileName="pulse_loader.json"
+                        app:lottie_loop="true" />
+                    <!--<ImageButton
+                        android:id="@+id/ib_nudge"
+                        android:layout_width="wrap_content"
+                        android:layout_gravity="top|end"
+                        android:background="?attr/selectableItemBackground"
+                        android:layout_height="wrap_content" />-->
+
+                    <TextView
+                        android:id="@+id/tv_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|end"
+                        android:layout_marginBottom="3dp"
+                        android:text="10:53"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp" />
+
+                </FrameLayout>
+            </LinearLayout>
+        </FrameLayout>
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/nav_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:fitsSystemWindows="true"
+            android:theme="@style/ThemeToolbar.NavigationView"
+            app:headerLayout="@layout/nav_header"
+            app:itemTextColor="@android:color/white"
+            app:menu="@menu/drawer_view" />
+    </androidx.drawerlayout.widget.DrawerLayout>
 </LinearLayout>

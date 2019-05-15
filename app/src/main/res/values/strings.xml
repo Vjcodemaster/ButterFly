@@ -22,4 +22,6 @@
         <item>You have gone insane! You want to hug him?</item>
         <item>Alright you should stop at this moment! Things might go wild :P</item>
     </string-array>
+
+    <string name="settings">Settings</string>
 </resources>
