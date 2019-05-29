@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 public class SharedPreferenceClass {
     private SharedPreferences sharedPreferences;
     private Context _context;
-    SharedPreferences.Editor editor;
+    private SharedPreferences.Editor editor;
 
     private static final String APP_PREFERENCES = "BUTTERFLY_PREFERENCES";
 
@@ -17,6 +17,8 @@ public class SharedPreferenceClass {
     private static final String USER_PHONE = "USER_PHONE";
 
     private static final String BUTTERFLY_NAME = "BUTTERFLY_NAME";
+
+    private static final String LAST_SEEN = "LAST_SEEN";
 
 
     // Constructor
@@ -39,6 +41,10 @@ public class SharedPreferenceClass {
         editor.apply();
     }
 
+    public void setLastSeen(String sLastSeen){
+        editor.putString(LAST_SEEN, sLastSeen);
+        editor.apply();
+    }
     public boolean getUserLogStatus(){
         return sharedPreferences.getBoolean(IS_LOGGED_IN, false);
     }
@@ -49,5 +55,9 @@ public class SharedPreferenceClass {
 
     public String getButterflyName(){
         return sharedPreferences.getString(BUTTERFLY_NAME, "");
+    }
+
+    public String getLastSeen(){
+        return sharedPreferences.getString(LAST_SEEN, "");
     }
 }

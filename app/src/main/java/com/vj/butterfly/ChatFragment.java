@@ -172,6 +172,7 @@ public class ChatFragment extends Fragment implements OnChatInterfaceListener {
                 updateMessageList(e);
             }
         });
+
     }
 
     private void updateMessageList(DataBaseHelper e) {
@@ -216,6 +217,8 @@ public class ChatFragment extends Fragment implements OnChatInterfaceListener {
                     this.chatRVAdapter.notifyItemChanged(nFlag - 1);
                 }
                 //this.recyclerView.scrollToPosition(this.chatRVAdapter.getItemCount() - 1);
+                break;
+            case "TYPING":
                 break;
         }
     }

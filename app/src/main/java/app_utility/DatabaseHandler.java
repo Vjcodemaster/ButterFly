@@ -69,7 +69,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_STATUS, dataBaseHelper.get_status());
 
         db.insert(TABLE_MESSAGES, null, values);
-
         db.close();
     }
 

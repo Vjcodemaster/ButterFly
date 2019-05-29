@@ -25,7 +25,7 @@ class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatHolder> {
 
     private static final int DATE = 3;
 
-    public static int viewType;
+    private static int viewType;
     private Context context;
 
     private RecyclerView recyclerView;
@@ -80,7 +80,6 @@ class ChatRVAdapter extends RecyclerView.Adapter<ChatRVAdapter.ChatHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull final ChatRVAdapter.ChatHolder holder, int position) {
-
         switch (viewType) {
             case DATE:
                 holder.tvDate.setText(alDBMessages.get(position).get_time());

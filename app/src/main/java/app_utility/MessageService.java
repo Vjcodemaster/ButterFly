@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.vj.butterfly.ChatFragment;
+import com.vj.butterfly.HomeScreenActivity;
 import com.vj.butterfly.R;
 
 import java.util.ArrayList;
@@ -138,12 +139,67 @@ public class MessageService extends Service implements OnChatInterfaceListener {
                 refOfService.stopForeground(true);
                 refOfService.stopSelf();
                 break;
+            case "ONLINE":
+                if (nFlag == 1) {
+                    dbReference.child("chats").child("9036640528").child("online").setValue(true);
+                } else {
+                    String sTime = TimestampUtil.getCurrentTimestampStringFormat().split(" ")[1];
+                    dbReference.child("chats").child("9036640528").child("last_seen").setValue(sTime);
+                    dbReference.child("chats").child("9036640528").child("online").setValue(false);
+                }
+                break;
+            case "CHECK_ONLINE_STATUS":
+                dbReference.child("chats").child("9036640528").child("online").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        boolean onlineStatus = (boolean)dataSnapshot.getValue();
+                        if(onlineStatus){
+                            if(HomeScreenActivity.onChatInterfaceListener!=null){
+                                HomeScreenActivity.onChatInterfaceListener.onChat("STATUS_RETRIEVED", "Online",1, null);
+                            }
+                        }else {
+                            if(HomeScreenActivity.onChatInterfaceListener!=null){
+                                HomeScreenActivity.onChatInterfaceListener.onChat("STATUS_RETRIEVED", sharedPreferenceClass.getLastSeen(),0, null);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+                break;
         }
     }
 
     private void notifyTyping(boolean b) {
         dbReference.child("chats").child("9036640528").child("typing").setValue(b);
     }
+
+
+   /* private void allFieldsListener(){
+        dbReference.child("chats").child("9036640528").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String key = dataSnapshot.getKey();
+                assert key != null;
+                switch (key){
+                    case "text":
+                        break;
+                    case "typing":
+                        break;
+                    case "online":
+                        break;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }*/
 
     private void checkPreviousMessageCondition(final String sNewMessage) {
         dbReference.child("chats").child("9036640528").child("text").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -269,6 +325,27 @@ public class MessageService extends Service implements OnChatInterfaceListener {
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 switch (dataSnapshot.getKey()) {
+                    case "online":
+                        if (HomeScreenActivity.onChatInterfaceListener != null) {
+                            if ((boolean) dataSnapshot.getValue()) {
+                                HomeScreenActivity.onChatInterfaceListener.onChat("ONLINE", "Online", 1, null);
+                            } else {
+                                dbReference.child("chats").child("9036640528").child("last_seen").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        String sLastSeen = (String)dataSnapshot.getValue();
+                                        HomeScreenActivity.onChatInterfaceListener.onChat("ONLINE", sLastSeen, 0, null);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                            }
+                        }
+                        break;
                         /*case "sent":
                             if ((boolean)dataSnapshot.getValue()){
                                 ArrayList<DataBaseHelper> alPendingList = new ArrayList<>(dbh.getMessageByStatusFilter(StaticReferenceClass.PENDING));
@@ -315,11 +392,20 @@ public class MessageService extends Service implements OnChatInterfaceListener {
                         }
                         break;
                     case "typing":
-                        if ((boolean) dataSnapshot.getValue()) {
-
-                        } else {
-
+                        if (HomeScreenActivity.onChatInterfaceListener != null) {
+                            if ((boolean) dataSnapshot.getValue()) {
+                                HomeScreenActivity.onChatInterfaceListener.onChat("TYPING", "", 1, null);
+                            } else {
+                                HomeScreenActivity.onChatInterfaceListener.onChat("TYPING", "", 0, null);
+                            }
                         }
+                        /*if(ChatFragment.mListener!=null){
+                            if ((boolean) dataSnapshot.getValue()) {
+                                ChatFragment.mListener.onChat("TYPING", "", 1, null);
+                            } else {
+                                ChatFragment.mListener.onChat("TYPING", "", 0, null);
+                            }
+                        }*/
                         break;
                     case "text":
                         String s1 = dataSnapshot.getValue().toString();
