@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import app_utility.DataBaseHelper;
 import app_utility.DatabaseHandler;
 import app_utility.MessageService;
@@ -95,6 +96,16 @@ public class ChatFragment extends Fragment implements OnChatInterfaceListener {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (etEmoji != null && etEmoji.getText().toString().length() >= 1) {
+            if (MessageService.onChatInterfaceListener != null)
+                MessageService.onChatInterfaceListener.onChat("TYPING", "", 1, null);
+        }
+        //HomeScreenActivity.onChatInterfaceListener.onChat("ONLINE", "", 0, null);
+    }
+
     private void initViews(View view) {
         //ibEmoji = view.findViewById(R.id.ib_emoji);
         ibSend = view.findViewById(R.id.ib_send);
@@ -157,7 +168,7 @@ public class ChatFragment extends Fragment implements OnChatInterfaceListener {
 
                 String sPreviousDate = dbh.lastDate().split(" ")[0];
                 String sToday = sTimeStamp.split(" ")[0];
-                if(!sToday.equals(sPreviousDate)){
+                if (!sToday.equals(sPreviousDate)) {
                     int msgType = StaticReferenceClass.DATE;
                     int msgStatus = StaticReferenceClass.DONT_SEND;
                     DataBaseHelper e = new DataBaseHelper(msgType, "", sToday, msgStatus);

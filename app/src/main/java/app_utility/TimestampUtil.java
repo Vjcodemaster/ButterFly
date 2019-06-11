@@ -54,7 +54,7 @@ public class TimestampUtil {
      */
     public static Timestamp getTimestampFromString(String timestamp) {
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS", Locale.US);
             Date parsedDate = dateFormat.parse(timestamp);
             return new Timestamp(parsedDate.getTime());
         } catch (ParseException e) {

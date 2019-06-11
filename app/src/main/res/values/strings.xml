@@ -10,6 +10,7 @@
     <string name="made_with_love">Crafted with \u2764</string>
 
     <string name="typing">typing…</string>
+    <string name="online">online</string>
     <string name="is_thinking">is thinking about…</string>
 
     <string name="b">Bhavya</string>
@@ -24,4 +25,7 @@
     </string-array>
 
     <string name="settings">Settings</string>
+    <string name="nick_name">Nick name</string>
+
+    <string name="choose_nick_name">Choose your nick name</string>
 </resources>

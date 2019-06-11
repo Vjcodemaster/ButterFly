@@ -117,7 +117,7 @@
             android:fitsSystemWindows="true"
             android:theme="@style/ThemeToolbar.NavigationView"
             app:headerLayout="@layout/nav_header"
-            app:itemTextColor="@android:color/white"
+            app:itemTextColor="@color/colorPrimaryDark"
             app:menu="@menu/drawer_view" />
     </androidx.drawerlayout.widget.DrawerLayout>
 </LinearLayout>

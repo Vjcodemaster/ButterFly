@@ -10,6 +10,11 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
+
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -23,13 +28,12 @@ import com.vj.butterfly.R;
 
 import java.util.ArrayList;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.core.app.NotificationCompat;
-
 import static android.content.ContentValues.TAG;
 import static androidx.core.app.NotificationCompat.PRIORITY_MAX;
+import static app_utility.StaticReferenceClass.OFFLINE_ONLY;
+import static app_utility.StaticReferenceClass.OFFLINE_TYPING;
+import static app_utility.StaticReferenceClass.ONLINE_ONLY;
+import static app_utility.StaticReferenceClass.ONLINE_TYPING;
 
 public class MessageService extends Service implements OnChatInterfaceListener {
 
@@ -52,6 +56,12 @@ public class MessageService extends Service implements OnChatInterfaceListener {
 
     NetworkState networkState;
     ConnectionStateMonitor connectionStateMonitor;
+    boolean typingStatus;
+
+    public static boolean IS_ONLINE = false;
+    public static boolean IS_TYPING = false;
+    public static String sLastSeen = "";
+
 
     public MessageService() {
     }
@@ -131,8 +141,8 @@ public class MessageService extends Service implements OnChatInterfaceListener {
                 break;
             case "MESSAGE_SENT":
                 //if (networkState.isOnline() && networkState.isNetworkAvailable(getApplicationContext())) {
-                    checkPreviousMessageCondition(sMessage);
-                    updateSent();
+                checkPreviousMessageCondition(sMessage);
+                updateSent();
                 //}
                 break;
             case "STOP_SERVICE":
@@ -146,22 +156,28 @@ public class MessageService extends Service implements OnChatInterfaceListener {
                     String sTime = TimestampUtil.getCurrentTimestampStringFormat().split(" ")[1];
                     dbReference.child("chats").child("9036640528").child("last_seen").setValue(sTime);
                     dbReference.child("chats").child("9036640528").child("online").setValue(false);
+                    dbReference.child("chats").child("9036640528").child("typing").setValue(false);
                 }
                 break;
-            case "CHECK_ONLINE_STATUS":
-                dbReference.child("chats").child("9036640528").child("online").addListenerForSingleValueEvent(new ValueEventListener() {
+            case "CHECK_STATUS":
+                checkChatStatus();
+                break;
+            case "READ":
+                dbReference.child("chats").child("9036640528").child("read").setValue(true);
+                break;
+        }
+    }
+
+    private void checkChatStatus() {
+        dbReference.child("chats").child("9036640528").child("online").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean onlineStatus = (boolean) dataSnapshot.getValue();
+
+                dbReference.child("chats").child("9036640528").child("typing").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        boolean onlineStatus = (boolean)dataSnapshot.getValue();
-                        if(onlineStatus){
-                            if(HomeScreenActivity.onChatInterfaceListener!=null){
-                                HomeScreenActivity.onChatInterfaceListener.onChat("STATUS_RETRIEVED", "Online",1, null);
-                            }
-                        }else {
-                            if(HomeScreenActivity.onChatInterfaceListener!=null){
-                                HomeScreenActivity.onChatInterfaceListener.onChat("STATUS_RETRIEVED", sharedPreferenceClass.getLastSeen(),0, null);
-                            }
-                        }
+                        typingStatus = (boolean) dataSnapshot.getValue();
                     }
 
                     @Override
@@ -169,8 +185,44 @@ public class MessageService extends Service implements OnChatInterfaceListener {
 
                     }
                 });
-                break;
-        }
+                int nFlag = 0;
+                String sMessage = "";
+                if (!onlineStatus && !typingStatus) {
+                    nFlag = OFFLINE_ONLY;
+                    sMessage = sharedPreferenceClass.getLastSeen();
+                    //HomeScreenActivity.onChatInterfaceListener.onChat("STATUS_RETRIEVED", sharedPreferenceClass.getLastSeen(), OFFLINE_ONLY, null);
+                } else if (onlineStatus && typingStatus) {
+                    nFlag = ONLINE_TYPING;
+                    sMessage = getResources().getString(R.string.typing);
+                    //HomeScreenActivity.onChatInterfaceListener.onChat("STATUS_RETRIEVED", getResources().getString(R.string.typing), ONLINE_TYPING, null);
+                }
+                if (!onlineStatus && typingStatus) {
+                    nFlag = OFFLINE_TYPING;
+                    sMessage = sharedPreferenceClass.getLastSeen();
+                    //HomeScreenActivity.onChatInterfaceListener.onChat("STATUS_RETRIEVED", sharedPreferenceClass.getLastSeen(), OFFLINE_TYPING, null);
+                } else if (onlineStatus && !typingStatus) {
+                    nFlag = ONLINE_ONLY;
+                    sMessage = getResources().getString(R.string.online);
+                    //HomeScreenActivity.onChatInterfaceListener.onChat("STATUS_RETRIEVED", "online", ONLINE_ONLY, null);
+                }
+                //if(!sMessage.equals("") && nFlag!=0)
+                HomeScreenActivity.onChatInterfaceListener.onChat("STATUS_RETRIEVED", sMessage, nFlag, null);
+                /*if (onlineStatus) {
+                    if (HomeScreenActivity.onChatInterfaceListener != null) {
+                        HomeScreenActivity.onChatInterfaceListener.onChat("STATUS_RETRIEVED", "Online", 1, null);
+                    }
+                } else {
+                    if (HomeScreenActivity.onChatInterfaceListener != null) {
+                        HomeScreenActivity.onChatInterfaceListener.onChat("STATUS_RETRIEVED", sharedPreferenceClass.getLastSeen(), 0, null);
+                    }
+                }*/
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void notifyTyping(boolean b) {
@@ -247,10 +299,10 @@ public class MessageService extends Service implements OnChatInterfaceListener {
         dbReference.child("chats").child("9036640528").child("read").setValue(false);
     }
 
-    private String getReadyToSendPendingMessages(){
+    private String getReadyToSendPendingMessages() {
         StringBuilder sAllMessages = new StringBuilder();
         ArrayList<DataBaseHelper> alPendingList = new ArrayList<>(dbh.getMessageByStatusFilter(StaticReferenceClass.PENDING));
-        for (int i=0; i<alPendingList.size();i++){
+        for (int i = 0; i < alPendingList.size(); i++) {
             sAllMessages.append("##").append(alPendingList.get(i).get_message());
         }
         return sAllMessages.toString();
@@ -315,7 +367,7 @@ public class MessageService extends Service implements OnChatInterfaceListener {
         });
     }*/
 
-    private void eventListener() {
+    /*private void eventListener() {
         dbReference.child("chats").child("9036640528").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -328,12 +380,12 @@ public class MessageService extends Service implements OnChatInterfaceListener {
                     case "online":
                         if (HomeScreenActivity.onChatInterfaceListener != null) {
                             if ((boolean) dataSnapshot.getValue()) {
-                                HomeScreenActivity.onChatInterfaceListener.onChat("ONLINE", "Online", 1, null);
+                                HomeScreenActivity.onChatInterfaceListener.onChat("ONLINE", getResources().getString(R.string.online), 1, null);
                             } else {
                                 dbReference.child("chats").child("9036640528").child("last_seen").addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        String sLastSeen = (String)dataSnapshot.getValue();
+                                        String sLastSeen = (String) dataSnapshot.getValue();
                                         HomeScreenActivity.onChatInterfaceListener.onChat("ONLINE", sLastSeen, 0, null);
                                     }
 
@@ -346,7 +398,23 @@ public class MessageService extends Service implements OnChatInterfaceListener {
                             }
                         }
                         break;
-                        /*case "sent":
+                    case "typing":
+                        if (HomeScreenActivity.onChatInterfaceListener != null) {
+                            if ((boolean) dataSnapshot.getValue()) {
+                                HomeScreenActivity.onChatInterfaceListener.onChat("TYPING", "", 1, null);
+                            } else {
+                                HomeScreenActivity.onChatInterfaceListener.onChat("TYPING", "", 0, null);
+                            }
+                        }
+                        *//*if(ChatFragment.mListener!=null){
+                            if ((boolean) dataSnapshot.getValue()) {
+                                ChatFragment.mListener.onChat("TYPING", "", 1, null);
+                            } else {
+                                ChatFragment.mListener.onChat("TYPING", "", 0, null);
+                            }
+                        }*//*
+                        break;
+                        *//*case "sent":
                             if ((boolean)dataSnapshot.getValue()){
                                 ArrayList<DataBaseHelper> alPendingList = new ArrayList<>(dbh.getMessageByStatusFilter(StaticReferenceClass.PENDING));
                                 for (int i=0; i<alPendingList.size();i++){
@@ -359,7 +427,7 @@ public class MessageService extends Service implements OnChatInterfaceListener {
                                     ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.size(), null);
                                 dbReference.child("chats").child("9036640528").child("sent").setValue(false);
                             }
-                            break;*/
+                            break;*//*
                     case "delivered":
                         if ((boolean) dataSnapshot.getValue()) {
                             ArrayList<DataBaseHelper> alPendingList = new ArrayList<>(dbh.getMessageByStatusFilter(StaticReferenceClass.SENT));
@@ -370,8 +438,8 @@ public class MessageService extends Service implements OnChatInterfaceListener {
                                 if (ChatFragment.mListener != null)
                                     ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.get(i).get_id(), e);
                             }
-                            /*if (ChatFragment.mListener != null)
-                                ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.size(), null);*/
+                            *//*if (ChatFragment.mListener != null)
+                                ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.size(), null);*//*
                             dbReference.child("chats").child("9036640528").child("delivered").setValue(false);
                             dbReference.child("chats").child("9036640528").child("text").setValue("");
                         }
@@ -386,31 +454,16 @@ public class MessageService extends Service implements OnChatInterfaceListener {
                                 if (ChatFragment.mListener != null)
                                     ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.get(i).get_id(), e);
                             }
-                            /*if (ChatFragment.mListener != null)
-                                ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.size(), null);*/
+                            *//*if (ChatFragment.mListener != null)
+                                ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.size(), null);*//*
                             dbReference.child("chats").child("9036640528").child("read").setValue(false);
                         }
                         break;
-                    case "typing":
-                        if (HomeScreenActivity.onChatInterfaceListener != null) {
-                            if ((boolean) dataSnapshot.getValue()) {
-                                HomeScreenActivity.onChatInterfaceListener.onChat("TYPING", "", 1, null);
-                            } else {
-                                HomeScreenActivity.onChatInterfaceListener.onChat("TYPING", "", 0, null);
-                            }
-                        }
-                        /*if(ChatFragment.mListener!=null){
-                            if ((boolean) dataSnapshot.getValue()) {
-                                ChatFragment.mListener.onChat("TYPING", "", 1, null);
-                            } else {
-                                ChatFragment.mListener.onChat("TYPING", "", 0, null);
-                            }
-                        }*/
-                        break;
+
                     case "text":
                         String s1 = dataSnapshot.getValue().toString();
                         String[] saMessages;
-                        if(!s1.equals("")) {
+                        if (!s1.equals("")) {
                             if (s1.contains("#")) {
                                 saMessages = s1.split("##");
                                 for (String saMessage : saMessages) {
@@ -418,7 +471,7 @@ public class MessageService extends Service implements OnChatInterfaceListener {
                                 }
                             } else {
                                 getTheMessages(s1);
-                                /*String sTimeStamp = String.valueOf(TimestampUtil.getCurrentTimestamp());
+                                *//*String sTimeStamp = String.valueOf(TimestampUtil.getCurrentTimestamp());
                                 int type = StaticReferenceClass.INCOME;
                                 int status = -1;
 
@@ -430,7 +483,118 @@ public class MessageService extends Service implements OnChatInterfaceListener {
                                 }
                                 dbh.addDataToMessageTable(e);
                                 dbReference.child("chats").child("9036640528").child("text").setValue("");
-                                dbReference.child("chats").child("9036640528").child("delivered").setValue(true);*/
+                                dbReference.child("chats").child("9036640528").child("delivered").setValue(true);*//*
+                            }
+                        }
+                        break;
+                }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }*/
+
+
+    private void eventListener() {
+        dbReference.child("chats").child("9036640528").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                switch (dataSnapshot.getKey()) {
+                    case "online":
+                        //if (HomeScreenActivity.onChatInterfaceListener != null) {
+                            if ((boolean) dataSnapshot.getValue()) {
+                                IS_ONLINE = true;
+                                if (HomeScreenActivity.onChatInterfaceListener != null)
+                                HomeScreenActivity.onChatInterfaceListener.onChat("ONLINE", getResources().getString(R.string.online), 1, null);
+                            } else {
+                                IS_ONLINE = false;
+                                dbReference.child("chats").child("9036640528").child("last_seen").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        String sLastSeen = (String) dataSnapshot.getValue();
+                                        if (HomeScreenActivity.onChatInterfaceListener != null)
+                                            HomeScreenActivity.onChatInterfaceListener.onChat("ONLINE", sLastSeen, 0, null);
+                                        sharedPreferenceClass.setLastSeen(sLastSeen);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        //}
+                        break;
+                    case "typing":
+                        //if (HomeScreenActivity.onChatInterfaceListener != null) {
+                            if ((boolean) dataSnapshot.getValue()) {
+                                IS_TYPING = true;
+                                if (HomeScreenActivity.onChatInterfaceListener != null)
+                                HomeScreenActivity.onChatInterfaceListener.onChat("TYPING", "", 1, null);
+                            } else {
+                                IS_TYPING = false;
+                                if (HomeScreenActivity.onChatInterfaceListener != null)
+                                HomeScreenActivity.onChatInterfaceListener.onChat("TYPING", "", 0, null);
+                            }
+                        //}
+                        break;
+                    case "delivered":
+                        if ((boolean) dataSnapshot.getValue()) {
+                            ArrayList<DataBaseHelper> alPendingList = new ArrayList<>(dbh.getMessageByStatusFilter(StaticReferenceClass.SENT));
+                            for (int i = 0; i < alPendingList.size(); i++) {
+                                int id = alPendingList.get(i).get_id();
+                                DataBaseHelper e = new DataBaseHelper(StaticReferenceClass.DELIVERED);
+                                dbh.updateStatusOfMessages(e, id);
+                                if (ChatFragment.mListener != null)
+                                    ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.get(i).get_id(), e);
+                            }
+                            dbReference.child("chats").child("9036640528").child("delivered").setValue(false);
+                            dbReference.child("chats").child("9036640528").child("text").setValue("");
+                        }
+                        break;
+                    case "read":
+                        if ((boolean) dataSnapshot.getValue()) {
+                            ArrayList<DataBaseHelper> alPendingList = new ArrayList<>(dbh.getMessageByStatusFilter(StaticReferenceClass.DELIVERED));
+                            for (int i = 0; i < alPendingList.size(); i++) {
+                                int id = alPendingList.get(i).get_id();
+                                DataBaseHelper e = new DataBaseHelper(StaticReferenceClass.READ);
+                                dbh.updateStatusOfMessages(e, id);
+                                if (ChatFragment.mListener != null)
+                                    ChatFragment.mListener.onChat("UPDATE_STATUS", "", alPendingList.get(i).get_id(), e);
+                            }
+                            dbReference.child("chats").child("9036640528").child("read").setValue(false);
+                        }
+                        break;
+
+                    case "text":
+                        String s1 = dataSnapshot.getValue().toString();
+                        String[] saMessages;
+                        if (!s1.equals("")) {
+                            if (s1.contains("#")) {
+                                saMessages = s1.split("##");
+                                for (String saMessage : saMessages) {
+                                    getTheMessages(saMessage);
+                                }
+                            } else {
+                                getTheMessages(s1);
                             }
                         }
                         break;
@@ -454,7 +618,7 @@ public class MessageService extends Service implements OnChatInterfaceListener {
         });
     }
 
-    private void getTheMessages(String s1){
+    private void getTheMessages(String s1) {
         String sTimeStamp = String.valueOf(TimestampUtil.getCurrentTimestampStringFormat());
         int type = StaticReferenceClass.INCOME;
         int status = -1;
@@ -468,5 +632,8 @@ public class MessageService extends Service implements OnChatInterfaceListener {
         dbh.addDataToMessageTable(e);
         dbReference.child("chats").child("9036640528").child("text").setValue("");
         dbReference.child("chats").child("9036640528").child("delivered").setValue(true);
+        if (HomeScreenActivity.onChatInterfaceListener != null)
+            HomeScreenActivity.onChatInterfaceListener.onChat("NEW_MESSAGE_RECEIVED", s1, 0, null);
     }
+
 }

@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
 import app_utility.CircularProgressBar;
 import app_utility.PermissionHandler;
 import app_utility.SharedPreferenceClass;
@@ -57,13 +58,13 @@ public class LoginActivity extends AppCompatActivity {
         initListeners();
     }
 
-    private void initClasses(){
+    private void initClasses() {
         dbReference = FirebaseDatabase.getInstance().getReference();
-        sharedPreferenceClass =  new SharedPreferenceClass(LoginActivity.this);
+        sharedPreferenceClass = new SharedPreferenceClass(LoginActivity.this);
         saFunnyCaptions = (getResources().getStringArray(R.array.like_him));
     }
 
-    private void initViews(){
+    private void initViews() {
         tvPutNumberHere = findViewById(R.id.tv_put_num);
         etPhoneNumber = findViewById(R.id.et_phone_number);
 
@@ -72,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
         tvPutNumberHere.setTypeface(face);*/
     }
 
-    private void initListeners(){
+    private void initListeners() {
         etPhoneNumber.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -87,19 +88,19 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 String sPhoneNumber = etPhoneNumber.getEditText().getText().toString();
-                if(sPhoneNumber.length()==10){
-                    if(sPhoneNumber.equals("9036640528") || sPhoneNumber.equals("9110886193")) {
+                if (sPhoneNumber.length() == 10) {
+                    if (sPhoneNumber.equals("9036640528") || sPhoneNumber.equals("9110886193")) {
                         Snackbar.make(findViewById(android.R.id.content), saFunnyCaptions[countOfPhoneNumber], Snackbar.LENGTH_SHORT).show();
-                        countOfPhoneNumber = countOfPhoneNumber +1;
+                        countOfPhoneNumber = countOfPhoneNumber + 1;
                     } else {
-                        if(sPhoneNumber.equals("8495964996")) {
+                        if (sPhoneNumber.equals("8495964996")) {
                             showProgressBar();
                             sharedPreferenceClass.setUserLogStatus(true, getResources().getString(R.string.b), getContactName("9036640528"), sPhoneNumber);
                             Intent in = new Intent(LoginActivity.this, HomeScreenActivity.class);
                             startActivity(in);
                             //validateInNewThread(sPhoneNumber);
                         } else {
-                            Snackbar.make(findViewById(android.R.id.content),"It's not your number :)",Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(findViewById(android.R.id.content), "It's not your number :)", Snackbar.LENGTH_SHORT).show();
                         }
                         hideKeyboard();
                     }
@@ -108,10 +109,10 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void hideKeyboard(){
+    private void hideKeyboard() {
         View view = this.getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
@@ -133,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
                                     Intent in = new Intent(LoginActivity.this, HomeScreenActivity.class);
                                     startActivity(in);
                                 } else {
-                                    Snackbar.make(findViewById(android.R.id.content),"It's not your number :)",Snackbar.LENGTH_SHORT).show();
+                                    Snackbar.make(findViewById(android.R.id.content), "It's not your number :)", Snackbar.LENGTH_SHORT).show();
                                 }
                             }
 
@@ -151,18 +152,17 @@ public class LoginActivity extends AppCompatActivity {
         }.start();
     }
 
-    public String getContactName(final String phoneNumber)
-    {
-        Uri uri=Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
+    public String getContactName(final String phoneNumber) {
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
 
         String[] projection = new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME};
 
-        String contactName="";
-        Cursor cursor= getContentResolver().query(uri,projection,null,null,null);
+        String contactName = "";
+        Cursor cursor =  getContentResolver().query(uri, projection, null, null, null);
 
         if (cursor != null) {
-            if(cursor.moveToFirst()) {
-                contactName=cursor.getString(0);
+            if (cursor.moveToFirst()) {
+                contactName = cursor.getString(0);
             }
             cursor.close();
         }
@@ -171,7 +171,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
         if (!PermissionHandler.hasPermissions(LoginActivity.this, APP_PERMISSION)) {
             ActivityCompat.requestPermissions(LoginActivity.this, APP_PERMISSION, 1);
@@ -182,7 +182,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int PERMISSION_ALL, String permissions[], int[] grantResults) {
         StringBuilder sMSG = new StringBuilder();
-        if(PERMISSION_ALL==1) {
+        if (PERMISSION_ALL == 1) {
             for (String sPermission : permissions) {
                 switch (sPermission) {
                     case Manifest.permission.READ_CONTACTS:
@@ -238,9 +238,10 @@ public class LoginActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case 3:if (resultCode != Activity.RESULT_OK) {
-                LoginActivity.this.finish();
-            }
+            case 3:
+                if (resultCode != Activity.RESULT_OK) {
+                    LoginActivity.this.finish();
+                }
                 break;
         }
     }
