@@ -6,16 +6,20 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.provider.Settings;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,13 +27,20 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import app_utility.SharedPreferenceClass;
 import library.CircleImageView;
 
 import static app_utility.StaticReferenceClass.PICTURE_REQUEST_CODE;
@@ -37,18 +48,20 @@ import static app_utility.StaticReferenceClass.PICTURE_REQUEST_CODE;
 
 
 /*
-*
+ *
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * {@link SettingsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link SettingsFragment#newInstance} factory method to
  * create an instance of this fragment.
-*/
+ */
 public class SettingsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private String sDialogCase;
 
     private FrameLayout frameLayout;
     private String mParam1;
@@ -64,6 +77,13 @@ public class SettingsFragment extends Fragment {
     private int shortAnimationDuration;
     private Animator currentAnimator;
 
+    private LinearLayout llNickName, llThink;
+
+    private TextView tvNickName, tvThinkAbout;
+
+    private SharedPreferenceClass sharedPreferenceClass;
+
+    TextInputLayout etDialogInput;
     //private OnFragmentInteractionListener mListener;
 
     public SettingsFragment() {
@@ -102,13 +122,19 @@ public class SettingsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
+        initClasses();
         initViews(view);
+        initListeners(view);
 
         shortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
         return view;
     }
 
-    private void initViews(final View view){
+    private void initClasses() {
+        sharedPreferenceClass = new SharedPreferenceClass(getActivity());
+    }
+
+    private void initViews(final View view) {
         /*Toolbar toolbar = view.findViewById(R.id.settings_toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
 
@@ -116,10 +142,33 @@ public class SettingsFragment extends Fragment {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
             //((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }*/
+        llNickName = view.findViewById(R.id.ll_nick_name);
+        llThink = view.findViewById(R.id.ll_think);
+
         frameLayout = view.findViewById(R.id.container);
         ibProfileEdit = view.findViewById(R.id.ib_edit_image);
         civDPPreview = view.findViewById(R.id.civ_profile_preview);
 
+        tvNickName = view.findViewById(R.id.tv_nick_name);
+        tvThinkAbout = view.findViewById(R.id.tv_thinking_about);
+    }
+
+    private void initListeners(final View view) {
+        llNickName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sDialogCase = "NICK_NAME";
+                openDialog(sDialogCase);
+            }
+        });
+
+        llThink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sDialogCase = "THINK";
+                openDialog(sDialogCase);
+            }
+        });
         civDPPreview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,11 +180,109 @@ public class SettingsFragment extends Fragment {
         ibProfileEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                HomeScreenActivity.isUserSelectingImage = true;
                 openImageIntent();
             }
         });
 
+        tvNickName.setText(sharedPreferenceClass.getUserName());
 
+        if (!sharedPreferenceClass.getThinking().equals("")) {
+            tvThinkAbout.setText(sharedPreferenceClass.getThinking().split("##,")[0]);
+        }
+    }
+
+    private void openDialog(final String sDialogCase) {
+        String sHeading = "";
+        final TextView[] tvThinkArray;
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getActivity());
+        View view2 = layoutInflaterAndroid.inflate(R.layout.dialog_settings, null);
+        etDialogInput = view2.findViewById(R.id.et_dialog_input);
+
+        switch (sDialogCase) {
+            case "NICK_NAME":
+                sHeading = "Enter your Nick Name";
+                break;
+            case "THINK":
+                sHeading = "What are you up to?";
+                ArrayList<String> alThink = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.think)));
+                if (!sharedPreferenceClass.getThinking().equals(""))
+                    alThink.addAll(Arrays.asList(sharedPreferenceClass.getThinking().split("##,")));
+
+                tvThinkArray = new TextView[alThink.size()];
+                LinearLayout llDynamicTv = view2.findViewById(R.id.ll_dynamic_tv);
+
+
+                for (int i = 0; i < alThink.size(); i++) {
+                    TextView tv = new TextView(getActivity());
+                    /*View view = new View(getActivity());
+                    view.setBackgroundColor(getResources().getColor(R.color.colorLightBlueTint));
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2);
+                    params.setMarginStart(10);
+                    params.setMarginEnd(10);
+                    view.setLayoutParams(params);*/
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    params.setMargins(0, 10, 0, 0);
+                    //params.setMarginEnd(10);
+                    tv.setLayoutParams(params);
+                    tv.setTextColor(getResources().getColor(R.color.colorPrimary));
+                    if (Build.VERSION.SDK_INT < 23) {
+                        tv.setTextAppearance(getActivity(), R.style.TextAppearance_AppCompat_Medium);
+                    } else {
+                        tv.setTextAppearance(R.style.TextAppearance_AppCompat_Medium);
+                    }
+                    tv.setText(alThink.get(i));
+                    TypedValue outValue = new TypedValue();
+                    getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
+                    tv.setBackgroundResource(outValue.resourceId);
+
+                    tvThinkArray[i] = tv;
+                    final int finalI = i;
+                    tvThinkArray[i].setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            String sThink = tvThinkArray[finalI].getText().toString();
+                            etDialogInput.getEditText().setText(sThink);
+                        }
+                    });
+                    //llDynamicTv.addView(view);
+                    llDynamicTv.addView(tv);
+                }
+                break;
+        }
+
+        builder.setView(view2);
+        builder.setCancelable(false);
+        builder.setTitle(sHeading);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                String s = etDialogInput.getEditText().getText().toString();
+                if (sDialogCase.equals("THINK")) {
+                    if (!s.equals("")) {
+                        tvThinkAbout.setText(s);
+                        String sThinking = sharedPreferenceClass.getThinking();
+                        if (!sThinking.equals(""))
+                            sThinking = sThinking + "##," + s;
+                        else
+                            sThinking = s;
+                        sharedPreferenceClass.setThinking(sThinking);
+                    }
+                } else {
+                    tvNickName.setText(s);
+                    sharedPreferenceClass.setUserName(s);
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     @Override
@@ -189,6 +336,7 @@ public class SettingsFragment extends Fragment {
         getActivity().startActivityForResult(chooserIntent, PICTURE_REQUEST_CODE);
         //onImageUtilsListener.onBitmapCompressed("START_ACTIVITY_FOR_RESULT",1,null, chooserIntent, outputFileUri);
     }
+
     @Override
     public void onDetach() {
         super.onDetach();
@@ -305,7 +453,7 @@ public class SettingsFragment extends Fragment {
                         .ofFloat(expandedImageView, View.X, startBounds.left))
                         .with(ObjectAnimator
                                 .ofFloat(expandedImageView,
-                                        View.Y,startBounds.top))
+                                        View.Y, startBounds.top))
                         .with(ObjectAnimator
                                 .ofFloat(expandedImageView,
                                         View.SCALE_X, startScaleFinal))

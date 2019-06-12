@@ -8,12 +8,10 @@
     android:gravity="center"
     tools:context=".SettingsFragment">
 
-    <!--<include
-        android:id="@+id/settings_toolbar"
-        layout="@layout/toolbar_layout" />-->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -24,18 +22,16 @@
             android:text="@string/choose_nick_name"/>-->
 
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <FrameLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:gravity="center|top"
             android:orientation="horizontal">
 
             <library.CircleImageView
                 android:id="@+id/civ_profile_preview"
-                android:layout_width="140dp"
-                android:layout_height="140dp"
-                android:layout_marginTop="10dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
                 android:background="?attr/selectableItemBackground"
                 android:src="@drawable/vj" />
 
@@ -43,35 +39,172 @@
                 android:id="@+id/ib_edit_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_gravity="bottom|end"
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/app_name"
-                android:src="@drawable/edit_dark"
+                android:src="@drawable/camera_edit"
                 tools:targetApi="m" />
+        </FrameLayout>
+
+        <!--<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nick_name"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
+
+            <TextView
+                android:id="@+id/tv_nick_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nick_name"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:textColor="@color/colorPrimaryDark" />
+        </LinearLayout>-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:id="@+id/ll_nick_name"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="20dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:background="@android:color/transparent"
+                android:clickable="false"
+                android:src="@drawable/nick_name_icon" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight=".7"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/nick_name"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
+
+                <TextView
+                    android:id="@+id/tv_nick_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/nick_name"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/colorAccent"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:clickable="false"
+                    android:src="@drawable/edit_dark" />
+            </LinearLayout>
         </LinearLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/et_nick_name"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:id="@+id/ll_think"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="200dp"
+            <ImageButton
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:hint="Nick Name"
-                android:imeOptions="actionNext"
-                android:inputType="text"
-                android:maxLength="10"
-                android:maxLines="1"
-                android:textColor="@color/colorAccent" />
+                android:layout_marginEnd="10dp"
+                android:background="@android:color/transparent"
+                android:clickable="false"
+                android:src="@drawable/think" />
 
-        </com.google.android.material.textfield.TextInputLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight=".7"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/im_thinking_about"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
+
+                <TextView
+                    android:id="@+id/tv_thinking_about"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/nick_name"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/colorAccent"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:clickable="false"
+                    android:src="@drawable/edit_dark" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
 
+    <!--<com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/et_nick_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:hint="Nick Name"
+            android:imeOptions="actionNext"
+            android:inputType="text"
+            android:maxLength="10"
+            android:maxLines="1"
+            android:textColor="@color/colorAccent" />
+
+    </com.google.android.material.textfield.TextInputLayout>-->
     <!-- <FrameLayout
          android:layout_width="match_parent"
          android:layout_height="match_parent">

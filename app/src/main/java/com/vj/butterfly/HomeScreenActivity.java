@@ -72,6 +72,7 @@ public class HomeScreenActivity extends AppCompatActivity implements OnChatInter
 
     DatabaseHandler dbh;
     public static OnChatInterfaceListener onChatInterfaceListener;
+    public static boolean isUserSelectingImage = false;
     SharedPreferenceClass sharedPreferenceClass;
     boolean isVisibleToUser;
     private int nPermissionFlag = 0;
@@ -289,7 +290,7 @@ public class HomeScreenActivity extends AppCompatActivity implements OnChatInter
         }
     }
 
-    private void loadSettingsFragment(){
+    private void loadSettingsFragment() {
         newFragment = SettingsFragment.newInstance("", "");
         sBackStackParent = newFragment.getClass().getName();
         transaction = getSupportFragmentManager().beginTransaction();
@@ -452,11 +453,13 @@ public class HomeScreenActivity extends AppCompatActivity implements OnChatInter
             if (requestCode == PICTURE_REQUEST_CODE) {
                 //this.data = data;
                 //new attractionNameAsyncTask().execute();
+                isUserSelectingImage = false;
             }
         } else {
             //stopProgressBar();
         }
     }
+
     /*
     this is implemented to make sure even when notification panel is pulled down user goes offline
     this is made just in case user goes and turns off the data or wifi from notification while using application
@@ -466,17 +469,18 @@ public class HomeScreenActivity extends AppCompatActivity implements OnChatInter
         // handle when the user pull down the notification bar where
         // (hasFocus will ='false') & if the user pushed the
         // notification bar back to the top, then (hasFocus will ='true')
-        if (!hasFocus) {
-            if (MessageService.onChatInterfaceListener != null) {
-                MessageService.onChatInterfaceListener.onChat("ONLINE", "", 0, null);
+        if (!isUserSelectingImage)
+            if (!hasFocus) {
+                if (MessageService.onChatInterfaceListener != null) {
+                    MessageService.onChatInterfaceListener.onChat("ONLINE", "", 0, null);
+                }
+                //Log.i("Tag", "Notification bar is pulled down");
+            } else {
+                //Log.i("Tag", "Notification bar is pushed up");
+                if (MessageService.onChatInterfaceListener != null) {
+                    MessageService.onChatInterfaceListener.onChat("ONLINE", "", 1, null);
+                }
             }
-            //Log.i("Tag", "Notification bar is pulled down");
-        } else {
-            //Log.i("Tag", "Notification bar is pushed up");
-            if (MessageService.onChatInterfaceListener != null) {
-                MessageService.onChatInterfaceListener.onChat("ONLINE", "", 1, null);
-            }
-        }
         super.onWindowFocusChanged(hasFocus);
     }
 

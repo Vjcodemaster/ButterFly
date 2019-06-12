@@ -12,6 +12,7 @@
     <string name="typing">typing…</string>
     <string name="online">online</string>
     <string name="is_thinking">is thinking about…</string>
+    <string name="im_thinking_about">I\'m thinking about…</string>
 
     <string name="b">Bhavya</string>
 
@@ -22,6 +23,15 @@
         <item>Looks like you want to kiss him!! :D</item>
         <item>You have gone insane! You want to hug him?</item>
         <item>Alright you should stop at this moment! Things might go wild :P</item>
+    </string-array>
+
+    <string-array name="think">
+        <item>Vijay 😍</item>
+        <item>Kiss 😘</item>
+        <item>LipLock 💏</item>
+        <item>Movie 🙊</item>
+        <item>Long Drive 🚘</item>
+        <item>To go out of Bangalore 🛩</item>
     </string-array>
 
     <string name="settings">Settings</string>

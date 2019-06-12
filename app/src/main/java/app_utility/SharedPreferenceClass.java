@@ -19,6 +19,7 @@ public class SharedPreferenceClass {
     private static final String BUTTERFLY_NAME = "BUTTERFLY_NAME";
 
     private static final String LAST_SEEN = "LAST_SEEN";
+    private static final String THINKING = "THINKING";
 
 
     // Constructor
@@ -45,6 +46,16 @@ public class SharedPreferenceClass {
         editor.putString(LAST_SEEN, sLastSeen);
         editor.apply();
     }
+    public void setThinking(String sThinking){
+        editor.putString(THINKING, sThinking);
+        editor.apply();
+    }
+
+    public void setUserName(String sUserName){
+        editor.putString(USER_NAME, sUserName);
+        editor.apply();
+    }
+
     public boolean getUserLogStatus(){
         return sharedPreferences.getBoolean(IS_LOGGED_IN, false);
     }
@@ -59,5 +70,9 @@ public class SharedPreferenceClass {
 
     public String getLastSeen(){
         return sharedPreferences.getString(LAST_SEEN, "");
+    }
+
+    public String getThinking(){
+        return sharedPreferences.getString(THINKING, "");
     }
 }
