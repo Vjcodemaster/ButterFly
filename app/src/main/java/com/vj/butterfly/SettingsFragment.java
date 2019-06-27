@@ -18,7 +18,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import app_utility.MessageService;
 import app_utility.SharedPreferenceClass;
 import library.CircleImageView;
 
@@ -64,6 +64,7 @@ public class SettingsFragment extends Fragment {
     private String sDialogCase;
 
     private FrameLayout frameLayout;
+    private TextView tvTapToClose;
     private String mParam1;
     private String mParam2;
 
@@ -146,6 +147,7 @@ public class SettingsFragment extends Fragment {
         llThink = view.findViewById(R.id.ll_think);
 
         frameLayout = view.findViewById(R.id.container);
+        tvTapToClose = view.findViewById(R.id.tv_tap_to_close);
         ibProfileEdit = view.findViewById(R.id.ib_edit_image);
         civDPPreview = view.findViewById(R.id.civ_profile_preview);
 
@@ -174,6 +176,7 @@ public class SettingsFragment extends Fragment {
             public void onClick(View v) {
                 zoomImageFromThumb(view, civDPPreview, R.drawable.vj);
                 frameLayout.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                tvTapToClose.setVisibility(View.VISIBLE);
             }
         });
 
@@ -193,6 +196,7 @@ public class SettingsFragment extends Fragment {
     }
 
     private void openDialog(final String sDialogCase) {
+        HomeScreenActivity.isUserSelectingImage = true;
         String sHeading = "";
         final TextView[] tvThinkArray;
 
@@ -204,9 +208,11 @@ public class SettingsFragment extends Fragment {
         switch (sDialogCase) {
             case "NICK_NAME":
                 sHeading = "Enter your Nick Name";
+                etDialogInput.getEditText().setHint("Nick Name");
                 break;
             case "THINK":
                 sHeading = "What are you up to?";
+                etDialogInput.getEditText().setHint("What are you thinking?");
                 ArrayList<String> alThink = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.think)));
                 if (!sharedPreferenceClass.getThinking().equals(""))
                     alThink.addAll(Arrays.asList(sharedPreferenceClass.getThinking().split("##,")));
@@ -268,16 +274,19 @@ public class SettingsFragment extends Fragment {
                         else
                             sThinking = s;
                         sharedPreferenceClass.setThinking(sThinking);
+                        MessageService.onChatInterfaceListener.onChat("THINK", s, -1, null);
                     }
                 } else {
                     tvNickName.setText(s);
                     sharedPreferenceClass.setUserName(s);
+                    MessageService.onChatInterfaceListener.onChat("NAME", s, -1, null);
                 }
+                HomeScreenActivity.isUserSelectingImage = false;
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-
+                HomeScreenActivity.isUserSelectingImage = false;
             }
         });
 
@@ -481,8 +490,9 @@ public class SettingsFragment extends Fragment {
                 currentAnimator = set;
 
                 frameLayout.setBackgroundColor(getResources().getColor(R.color.colorNextToWhite));
+                tvTapToClose.setVisibility(View.GONE);
+                HomeScreenActivity.isUserSelectingImage = false;
             }
         });
     }
-
 }

@@ -165,6 +165,12 @@ public class MessageService extends Service implements OnChatInterfaceListener {
             case "READ":
                 dbReference.child("chats").child("9036640528").child("read").setValue(true);
                 break;
+            case "THINK":
+                dbReference.child("chats").child("9036640528").child("think").setValue(sMessage);
+                break;
+            case "NAME":
+                dbReference.child("chats").child("9036640528").child("name").setValue(sMessage);
+                break;
         }
     }
 
@@ -597,6 +603,14 @@ public class MessageService extends Service implements OnChatInterfaceListener {
                                 getTheMessages(s1);
                             }
                         }
+                        break;
+                    case "think":
+                        String sThink = dataSnapshot.getValue().toString();
+                        sharedPreferenceClass.setButterflyThink(sThink);
+                        break;
+                    case "name":
+                        String sNickName = dataSnapshot.getValue().toString();
+                        sharedPreferenceClass.setButterflyNickName(sNickName);
                         break;
                 }
             }

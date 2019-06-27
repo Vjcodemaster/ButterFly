@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <library.CircleImageView
-        android:id="@+id/civ_dp"
+        android:id="@+id/civ_dp_tb"
         android:visibility="gone"
         android:layout_width="?attr/actionBarSize"
         android:layout_height="?attr/actionBarSize"

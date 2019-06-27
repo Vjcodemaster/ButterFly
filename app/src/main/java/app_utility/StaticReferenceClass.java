@@ -22,5 +22,13 @@ public class StaticReferenceClass {
     public static final int ONLINE_ONLY = 103; //when user is online without typing
     public static final int OFFLINE_ONLY = 104; //when user is offline without typing and online
 
+    public static final int ONLINE = 201;
+    public static final int TYPING = 202;
+    //public static final int ONLINE = 203;
+
     public static final int PICTURE_REQUEST_CODE = 9101;
+
+    public static final int VISIBLE = 1;
+    public static final int INVISIBLE = 0;
+
 }

@@ -20,6 +20,7 @@ import app_utility.DataBaseHelper;
 import app_utility.DatabaseHandler;
 import app_utility.MessageService;
 import app_utility.OnChatInterfaceListener;
+import app_utility.SharedPreferenceClass;
 import app_utility.StaticReferenceClass;
 import app_utility.TimestampUtil;
 
@@ -53,6 +54,8 @@ public class ChatFragment extends Fragment implements OnChatInterfaceListener {
 
     boolean isTypingInformed = false;
 
+    SharedPreferenceClass sharedPreferenceClass;
+
     public ChatFragment() {
         // Required empty public constructor
     }
@@ -83,6 +86,7 @@ public class ChatFragment extends Fragment implements OnChatInterfaceListener {
         }
         mListener = this;
         dbh = new DatabaseHandler(getActivity());
+        sharedPreferenceClass = new SharedPreferenceClass(getActivity());
     }
 
     @Override
@@ -92,6 +96,10 @@ public class ChatFragment extends Fragment implements OnChatInterfaceListener {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
         initViews(view);
+        String sLastTypedMsg = sharedPreferenceClass.getLastTypingMessage();
+        if(!sLastTypedMsg.equals("")){
+            etEmoji.setText(sLastTypedMsg);
+        }
 
         return view;
     }
@@ -110,6 +118,7 @@ public class ChatFragment extends Fragment implements OnChatInterfaceListener {
         //ibEmoji = view.findViewById(R.id.ib_emoji);
         ibSend = view.findViewById(R.id.ib_send);
         etEmoji = view.findViewById(R.id.et_input_msg);
+
 
         etEmoji.addTextChangedListener(new TextWatcher() {
             @Override
@@ -208,6 +217,14 @@ public class ChatFragment extends Fragment implements OnChatInterfaceListener {
 
     @Override
     public void onDetach() {
+
+        if(etEmoji.getText().length()>=1 && !etEmoji.getText().equals(" ")) {
+
+            sharedPreferenceClass.setLastTypingMessage(etEmoji.getText().toString());
+        } else {
+            MessageService.onChatInterfaceListener.onChat("TYPING", "", 0, null);
+            sharedPreferenceClass.setLastTypingMessage("");
+        }
         super.onDetach();
         mListener = null;
     }

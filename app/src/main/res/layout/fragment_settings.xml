@@ -5,8 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
+    android:clickable="true"
     android:gravity="center"
-    tools:context=".SettingsFragment">
+    tools:context=".SettingsFragment"
+    android:focusable="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -221,5 +223,16 @@
         android:layout_height="match_parent"
         android:contentDescription="@string/app_name"
         android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_tap_to_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:text="Tap to close image"
+        android:textColor="@color/colorHint"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="10dp"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"/>
 
 </FrameLayout>

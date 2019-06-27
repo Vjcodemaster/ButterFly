@@ -21,6 +21,9 @@ public class SharedPreferenceClass {
     private static final String LAST_SEEN = "LAST_SEEN";
     private static final String THINKING = "THINKING";
 
+    private static final String BUTTERFLY_NICK_NAME = "BUTTERFLY_NICK_NAME";
+    private static final String BUTTERFLY_THINK = "BUTTERFLY_THINK";
+    private static final String LAST_TYPE_MSG = "LAST_TYPE_MSG";
 
     // Constructor
     public SharedPreferenceClass(Context context) {
@@ -56,6 +59,21 @@ public class SharedPreferenceClass {
         editor.apply();
     }
 
+    public void setButterflyNickName(String sNickName){
+        editor.putString(BUTTERFLY_NICK_NAME, sNickName);
+        editor.apply();
+    }
+
+    public void setButterflyThink(String sThink){
+        editor.putString(BUTTERFLY_THINK, sThink);
+        editor.apply();
+    }
+
+    public void setLastTypingMessage(String sTypingMessage){
+        editor.putString(LAST_TYPE_MSG, sTypingMessage);
+        editor.apply();
+    }
+
     public boolean getUserLogStatus(){
         return sharedPreferences.getBoolean(IS_LOGGED_IN, false);
     }
@@ -74,5 +92,20 @@ public class SharedPreferenceClass {
 
     public String getThinking(){
         return sharedPreferences.getString(THINKING, "");
+    }
+    public String getUserPhone(){
+        return sharedPreferences.getString(USER_PHONE, "");
+    }
+
+    public String getButterflyThink(){
+        return sharedPreferences.getString(BUTTERFLY_THINK, "");
+    }
+
+    public String getButterflyNickName(){
+        return sharedPreferences.getString(BUTTERFLY_NICK_NAME, "");
+    }
+
+    public String getLastTypingMessage(){
+        return sharedPreferences.getString(LAST_TYPE_MSG, "");
     }
 }

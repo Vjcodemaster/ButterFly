@@ -26,7 +26,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:hint="Nick Name"
                 android:imeOptions="actionNext"
                 android:inputType="text"
                 android:maxLength="20"

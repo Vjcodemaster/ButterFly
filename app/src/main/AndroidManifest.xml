@@ -25,7 +25,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-
+        <activity android:name=".ButterflyActivity"/>
         <receiver
             android:name="app_utility.AutoStart"
             android:enabled="true"
@@ -39,8 +39,7 @@
         <service
             android:name="app_utility.MessageService"
             android:enabled="true"
-            android:exported="true" />
-        <!--android:process=":app_utility.MessageService"-->
+            android:exported="true" /> <!-- android:process=":app_utility.MessageService" -->
         <activity android:name=".LoginActivity" />
         <activity
             android:name=".HomeScreenActivity"
